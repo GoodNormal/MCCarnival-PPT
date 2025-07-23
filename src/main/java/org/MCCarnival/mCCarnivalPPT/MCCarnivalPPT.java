@@ -1,6 +1,10 @@
 package org.MCCarnival.mCCarnivalPPT;
 
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class MCCarnivalPPT extends JavaPlugin {
 
@@ -30,6 +34,36 @@ public final class MCCarnivalPPT extends JavaPlugin {
      */
     public static int getSearchRange() {
         return instance.getConfig().getInt("settings.search-range", 10);
+    }
+    
+    /**
+     * 获取支持的物品类型列表
+     */
+    public static List<Material> getSupportedItems() {
+        List<String> itemNames = instance.getConfig().getStringList("supported-items");
+        List<Material> materials = new ArrayList<>();
+        
+        // 如果配置为空，使用默认的幻翼膜
+        if (itemNames.isEmpty()) {
+            materials.add(Material.PHANTOM_MEMBRANE);
+            return materials;
+        }
+        
+        for (String itemName : itemNames) {
+            try {
+                Material material = Material.valueOf(itemName.toUpperCase());
+                materials.add(material);
+            } catch (IllegalArgumentException e) {
+                instance.getLogger().warning("配置文件中的物品类型无效: " + itemName);
+            }
+        }
+        
+        // 如果没有有效的物品类型，使用默认的幻翼膜
+        if (materials.isEmpty()) {
+            materials.add(Material.PHANTOM_MEMBRANE);
+        }
+        
+        return materials;
     }
 
     @Override

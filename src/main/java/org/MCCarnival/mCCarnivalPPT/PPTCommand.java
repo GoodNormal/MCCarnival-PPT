@@ -1,6 +1,7 @@
 package org.MCCarnival.mCCarnivalPPT;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,7 +11,6 @@ import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c只有玩家可以使用此命令！");
+            sender.sendMessage("§c只有管理可以使用此命令！");
             return true;
         }
 
@@ -86,7 +86,7 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
                 // 检查最大值限制
                 int maxPage = MCCarnivalPPT.getMaxPage();
                 if (targetPage > maxPage) {
-                    player.sendMessage("§c页数不能超过最大值 " + maxPage + "！如需设置更大值请使用 /post set 命令。");
+                    player.sendMessage("§c页数不能超过最大值 " + maxPage + "！");
                     return true;
                 }
                 
@@ -115,8 +115,8 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
                 ItemDisplay itemDisplay = (ItemDisplay) entity;
                 ItemStack item = itemDisplay.getItemStack();
                 
-                // 检查是否是幻翼膜
-                if (item != null && item.getType() == Material.PHANTOM_MEMBRANE) {
+                // 检查是否是支持的物品类型
+                if (item != null && MCCarnivalPPT.getSupportedItems().contains(item.getType())) {
                     ItemMeta meta = item.getItemMeta();
                     if (meta != null && meta.hasCustomModelData()) {
                         int currentCustomModelData = meta.getCustomModelData();
@@ -127,7 +127,7 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
                             // 检查最大值限制
                             int maxPage = MCCarnivalPPT.getMaxPage();
                             if (newCustomModelData > maxPage) {
-                                player.sendMessage("§c无法翻页：已达到最大页数 " + maxPage + "！如需设置更大值请使用 /post set 命令。");
+                                player.sendMessage("§c无法翻页：已达到最大页数 " + maxPage + "！");
                                 found = true;
                                 continue;
                             }
@@ -135,7 +135,7 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
                             newCustomModelData = currentCustomModelData - 1;
                             // 检查最小值限制
                             if (newCustomModelData < 1) {
-                                player.sendMessage("§c无法翻页：CustomModelData不能低于1！");
+                                player.sendMessage("§c无法翻页：ppt已经到底第一页了");
                                 found = true;
                                 continue;
                             }
@@ -145,7 +145,7 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
                         item.setItemMeta(meta);
                         itemDisplay.setItemStack(item);
                         
-                        player.sendMessage("§a成功修改ItemDisplay的CustomModelData为: " + newCustomModelData);
+                        player.sendMessage("§a成功将的ppt页数设为: " + newCustomModelData);
                         found = true;
                     }
                 }
@@ -153,7 +153,7 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
         }
         
         if (!found) {
-            player.sendMessage("§c未找到附近的幻翼膜ItemDisplay实体！");
+            player.sendMessage("§c未找到附近的可以换页的ppt");
         }
         
         return true;
@@ -174,15 +174,15 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
                 ItemDisplay itemDisplay = (ItemDisplay) entity;
                 ItemStack item = itemDisplay.getItemStack();
                 
-                // 检查是否是幻翼膜
-                if (item != null && item.getType() == Material.PHANTOM_MEMBRANE) {
+                // 检查是否是支持的物品类型
+                if (item != null && MCCarnivalPPT.getSupportedItems().contains(item.getType())) {
                     ItemMeta meta = item.getItemMeta();
                     if (meta != null) {
                         meta.setCustomModelData(pageNumber);
                         item.setItemMeta(meta);
                         itemDisplay.setItemStack(item);
                         
-                        player.sendMessage("§a成功设置ItemDisplay的页数为: " + pageNumber);
+                        player.sendMessage("§a成功设置PPT的页数为: " + pageNumber);
                         found = true;
                     }
                 }
@@ -190,7 +190,7 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
         }
         
         if (!found) {
-            player.sendMessage("§c未找到附近的幻翼膜ItemDisplay实体！");
+            player.sendMessage("§c未找到附近的可以换页的ppt！");
         }
     }
     

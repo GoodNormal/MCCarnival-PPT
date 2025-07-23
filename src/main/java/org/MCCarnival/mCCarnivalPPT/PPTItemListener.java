@@ -76,8 +76,8 @@ public class PPTItemListener implements Listener {
                 ItemDisplay itemDisplay = (ItemDisplay) entity;
                 ItemStack displayItem = itemDisplay.getItemStack();
                 
-                // 检查是否是幻翼膜
-                if (displayItem != null && displayItem.getType() == Material.PHANTOM_MEMBRANE) {
+                // 检查是否是支持的物品类型
+                if (displayItem != null && MCCarnivalPPT.getSupportedItems().contains(displayItem.getType())) {
                     ItemMeta displayMeta = displayItem.getItemMeta();
                     if (displayMeta != null && displayMeta.hasCustomModelData()) {
                         int currentCustomModelData = displayMeta.getCustomModelData();
@@ -88,7 +88,7 @@ public class PPTItemListener implements Listener {
                             // 检查最大值限制
                             int maxPage = MCCarnivalPPT.getMaxPage();
                             if (newCustomModelData > maxPage) {
-                                player.sendMessage("§c无法翻页：已达到最大页数 " + maxPage + "！如需设置更大值请使用 /post set 命令。");
+                                player.sendMessage("§c无法翻页：已达到最大页数 " + maxPage + "！");
                                 found = true;
                                 continue;
                             }

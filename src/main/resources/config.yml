@@ -5,6 +5,15 @@ ppt:
   # PPT的最大页数，超过此数值只能通过 /post set 命令修改
   max-page: 100
   
+# 支持的物品类型配置
+supported-items:
+  # 物品类型列表，支持多种不同的物品进行CustomModelData切换
+  # 格式：- "MATERIAL_NAME"
+  - "PHANTOM_MEMBRANE"
+  - "PAPER"
+  - "BOOK"
+  - "WRITTEN_BOOK"
+  
 # 其他设置
 settings:
   # 搜索范围（格数）

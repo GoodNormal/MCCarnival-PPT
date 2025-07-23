@@ -24,7 +24,7 @@ public class PostCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c只有玩家可以使用此命令！");
+            sender.sendMessage("§c只有管理可以使用此命令！");
             return true;
         }
 
@@ -78,15 +78,15 @@ public class PostCommand implements CommandExecutor, TabCompleter {
                 ItemDisplay itemDisplay = (ItemDisplay) entity;
                 ItemStack item = itemDisplay.getItemStack();
                 
-                // 检查是否是幻翼膜
-                if (item != null && item.getType() == Material.PHANTOM_MEMBRANE) {
+                // 检查是否是支持的物品类型
+                if (item != null && MCCarnivalPPT.getSupportedItems().contains(item.getType())) {
                     ItemMeta meta = item.getItemMeta();
                     if (meta != null) {
                         meta.setCustomModelData(pageNumber);
                         item.setItemMeta(meta);
                         itemDisplay.setItemStack(item);
                         
-                        player.sendMessage("§a成功强制设置ItemDisplay的页数为: " + pageNumber);
+                        player.sendMessage("§a成功强制设置海报的页数为: " + pageNumber);
                         found = true;
                     }
                 }
@@ -94,7 +94,7 @@ public class PostCommand implements CommandExecutor, TabCompleter {
         }
         
         if (!found) {
-            player.sendMessage("§c未找到附近的幻翼膜ItemDisplay实体！");
+            player.sendMessage("§c未找到附近的可以换页的ppt");
         }
     }
     
