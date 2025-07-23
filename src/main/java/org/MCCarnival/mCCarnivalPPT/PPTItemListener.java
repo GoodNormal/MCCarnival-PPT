@@ -83,10 +83,17 @@ public class PPTItemListener implements Listener {
                         int currentCustomModelData = displayMeta.getCustomModelData();
                         int newCustomModelData;
                         
+                        // 检查当前页数是否超过最大值限制
+                        int maxPage = MCCarnivalPPT.getMaxPage();
+                        if (currentCustomModelData > maxPage) {
+                            player.sendMessage("§c无法翻页：当前页数 " + currentCustomModelData + " 超过最大值 " + maxPage + "，请使用 /post set 命令！");
+                            found = true;
+                            continue;
+                        }
+                        
                         if (isNext) {
                             newCustomModelData = currentCustomModelData + 1;
                             // 检查最大值限制
-                            int maxPage = MCCarnivalPPT.getMaxPage();
                             if (newCustomModelData > maxPage) {
                                 player.sendMessage("§c无法翻页：已达到最大页数 " + maxPage + "！");
                                 found = true;
