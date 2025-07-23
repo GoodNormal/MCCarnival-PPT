@@ -1,0 +1,11 @@
+# MCCarnival-PPT 插件配置文件
+
+# PPT页数设置
+ppt:
+  # PPT的最大页数，超过此数值只能通过 /post set 命令修改
+  max-page: 100
+  
+# 其他设置
+settings:
+  # 搜索范围（格数）
+  search-range: 10
