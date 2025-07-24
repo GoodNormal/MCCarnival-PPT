@@ -1,9 +1,11 @@
 # MCCarnival-PPT 插件使用说明
 
 ## 功能描述
-这个插件可以修改ItemDisplay实体中指定物品的CustomModelData值，支持命令操作和物品交互两种方式。支持的物品类型可在配置文件中自定义，默认支持幻翼膜、纸、书和成书等物品。
+这个插件包含两个主要功能：
+1. **PPT翻页功能**：可以修改ItemDisplay实体中指定物品的CustomModelData值，支持命令操作和物品交互两种方式。支持的物品类型可在配置文件中自定义，默认支持幻翼膜、纸、书和成书等物品。
+2. **电梯传送功能**：玩家可以通过在特定方块上双击跳跃来实现垂直传送，支持向上和向下传送。
 
-## 命令使用
+## PPT翻页命令使用
 
 ### /ppt next
 - 功能：将附近支持的ItemDisplay实体的CustomModelData值+1
@@ -36,7 +38,7 @@
 - 权限：仅OP可用
 - 说明：禁用后翻页笔将无法使用，但命令翻页仍然可用，再次执行可重新启用
 
-## 高级设置命令
+## PPT高级设置命令
 
 ### /post set <数字>
 - 功能：强制设置页数（无最大值限制）
@@ -44,6 +46,77 @@
 - 说明：可以设置超过配置文件中最大值的页数，用于特殊情况
 - 参数：页数必须大于等于1
 - 搜索范围：根据配置文件设置
+
+## 电梯系统命令
+
+### /elevator reload
+- 功能：重载电梯配置文件
+- 权限：仅OP可用
+- 说明：当修改elevator.json配置文件后，使用此命令重载配置
+
+### /elevator status
+- 功能：查看电梯系统当前状态
+- 权限：仅OP可用
+- 说明：显示电梯功能是否启用、方块类型、搜索距离等信息
+
+### /elevator info
+- 功能：查看电梯系统使用说明
+- 权限：仅OP可用
+- 说明：显示如何使用电梯功能的详细说明
+
+## 电梯传送功能
+
+### 使用方法
+1. **向上传送**：站在绿宝石块或钻石块上，单击跳跃键（空格键）
+2. **向下传送**：站在红石块或钻石块上，按Shift键
+3. **双向方块**：钻石块支持双向传送（跳跃向上，Shift向下）
+4. 每种方块的传送距离可以独立配置
+
+### 功能特点
+- **精确传送**：按配置的距离进行精确的垂直传送
+- **安全传送**：确保传送位置安全，避免卡在方块中或传送到危险位置
+- **冷却机制**：防止频繁使用，默认3秒冷却时间
+- **视觉效果**：传送时播放音效和粒子效果
+- **权限兼容**：与现有PPT权限系统完美兼容
+
+### 电梯配置文件 (elevator.json)
+
+```json
+{
+  "elevator": {
+    "enabled": true,
+  "move-distance": 10,
+  "up-block": "EMERALD_BLOCK",
+  "down-block": "REDSTONE_BLOCK",
+  "bidirectional-block": "DIAMOND_BLOCK",
+  "up-block-distance": 10,
+  "down-block-distance": 10,
+  "bidirectional-block-up-distance": 10,
+  "bidirectional-block-down-distance": 10,
+  "sound-enabled": true,
+    "sound-type": "ENTITY_ENDERMAN_TELEPORT",
+    "particle-enabled": true,
+    "particle-type": "PORTAL",
+    "cooldown-seconds": 2
+  }
+}
+```
+
+### 配置说明
+- `enabled`: 是否启用电梯功能
+- `move-distance`: 移动距离（当前未使用）
+- `up-block`: 向上传送方块（默认：绿宝石块）
+- `down-block`: 向下传送方块（默认：红石块）
+- `bidirectional-block`: 双向传送方块（默认：钻石块）
+- `up-block-distance`: 上行方块传送距离（默认：10格）
+- `down-block-distance`: 下行方块传送距离（默认：10格）
+- `bidirectional-block-up-distance`: 双向方块上行传送距离（默认：10格）
+- `bidirectional-block-down-distance`: 双向方块下行传送距离（默认：10格）
+- `sound-enabled`: 是否启用音效
+- `sound-type`: 音效类型
+- `particle-enabled`: 是否启用粒子效果
+- `particle-type`: 粒子效果类型
+- `cooldown-seconds`: 冷却时间（秒）
 
 ## PPT翻页笔使用
 
@@ -146,6 +219,57 @@ settings:
 - 配置文件修改后需要重启服务器或重载插件才能生效
 - 如果配置的物品类型无效，插件会在控制台显示警告并使用默认的幻翼膜
 
+## 玩家位置固定系统
+
+### 功能说明
+
+玩家位置固定系统可以将服务器中的所有非OP玩家固定在指定的位置和朝向，按照特定的排列规则自动排列。
+
+### 排列规则
+
+- **第一个玩家**：作为基准点
+- **后续玩家**：按Z轴递增排列（间距1格）
+- **换行规则**：每20个玩家换行（X轴+1，Y轴+1）
+- **换排规则**：每排最多30行，然后向后延伸（X轴继续+1）
+
+### 命令使用
+
+#### 基本命令
+
+```
+/position enable          # 启用位置固定功能
+/position disable         # 禁用位置固定功能
+/position setbase         # 设置当前位置为基准点
+/position status          # 查看系统状态
+/position reposition      # 重新排列所有玩家位置
+/position help            # 显示帮助信息
+```
+
+#### 豁免管理
+
+```
+/position exempt add <玩家名>      # 添加玩家到豁免列表
+/position exempt remove <玩家名>   # 从豁免列表移除玩家
+```
+
+### 使用步骤
+
+1. **设置基准点**：站在想要作为第一个玩家位置的地方，执行 `/position setbase`
+2. **启用功能**：执行 `/position enable`
+3. **管理豁免**：如需要某些玩家不受位置固定影响，使用 `/position exempt add <玩家名>`
+
+### 特性
+
+- **自动排列**：玩家加入服务器时自动分配位置
+- **位置锁定**：玩家移动超过0.5格会被自动传送回指定位置
+- **OP豁免**：OP玩家自动豁免位置固定
+- **动态调整**：玩家离开时自动重新排列剩余玩家
+- **朝向统一**：所有玩家朝向与基准点一致
+
+### 权限
+
+- `mccarnival.position.admin`：管理玩家位置固定系统（默认：OP）
+
 ## 安装方法
 
 1. 将编译好的jar文件放入服务器的plugins文件夹
@@ -153,3 +277,4 @@ settings:
 3. 权限配置：
    - 命令使用：确保需要使用命令的玩家拥有OP权限
    - 翻页笔使用：给需要使用翻页笔的玩家分配权限 `mccarnival.ppt.penuse`
+   - 位置固定管理：给需要管理位置固定功能的玩家分配权限 `mccarnival.position.admin`

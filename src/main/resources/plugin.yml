@@ -17,8 +17,19 @@ commands:
     description: "PPT高级设置命令"
     usage: "/post set <数字>"
     permission: op
+  elevator:
+    description: "电梯系统管理命令"
+    usage: "/elevator <reload|status|info>"
+    permission: op
+  position:
+    description: "玩家位置固定系统管理命令"
+    usage: "/position <enable|disable|setbase|status|reposition|exempt|help>"
+    permission: op
 
 permissions:
   mccarnival.ppt.penuse:
     description: "允许使用PPT翻页笔"
     default: false
+  mccarnival.position.admin:
+    description: "允许管理玩家位置固定系统"
+    default: op

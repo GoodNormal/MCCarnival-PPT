@@ -11,6 +11,10 @@ public final class MCCarnivalPPT extends JavaPlugin {
     // 插件实例
     private static MCCarnivalPPT instance;
     
+    public static MCCarnivalPPT getInstance() {
+        return instance;
+    }
+    
     // 控制翻页笔是否被禁用
     private static boolean pagingForbidden = false;
     
@@ -87,8 +91,27 @@ public final class MCCarnivalPPT extends JavaPlugin {
         this.getCommand("post").setExecutor(postCommand);
         this.getCommand("post").setTabCompleter(postCommand);
         
+        ElevatorCommand elevatorCommand = new ElevatorCommand();
+        this.getCommand("elevator").setExecutor(elevatorCommand);
+        this.getCommand("elevator").setTabCompleter(elevatorCommand);
+        
+        PositionCommand positionCommand = new PositionCommand();
+        this.getCommand("position").setExecutor(positionCommand);
+        this.getCommand("position").setTabCompleter(positionCommand);
+        
         // 注册事件监听器
         getServer().getPluginManager().registerEvents(new PPTItemListener(), this);
+        
+        // 加载电梯配置并注册电梯监听器
+        ElevatorConfig.loadConfig();
+        if (ElevatorConfig.isEnabled()) {
+            getServer().getPluginManager().registerEvents(new ElevatorListener(), this);
+            getLogger().info("电梯功能已启用！");
+        }
+        
+        // 注册玩家位置管理器监听器
+        getServer().getPluginManager().registerEvents(new PlayerPositionManager(), this);
+        getLogger().info("玩家位置管理功能已加载！");
         
         getLogger().info("MCCarnival-PPT插件已启用！");
     }

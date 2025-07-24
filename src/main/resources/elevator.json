@@ -1,0 +1,18 @@
+{
+  "elevator": {
+    "enabled": true,
+    "move-distance": 5,
+    "up-block": "EMERALD_BLOCK",
+    "down-block": "REDSTONE_BLOCK",
+    "bidirectional-block": "DIAMOND_BLOCK",
+    "sound-enabled": true,
+    "sound-type": "ENTITY_ENDERMAN_TELEPORT",
+    "particle-enabled": true,
+    "particle-type": "PORTAL",
+    "cooldown-seconds": 2,
+    "up-block-distance": 15,
+    "down-block-distance": 8,
+    "bidirectional-block-up-distance": 12,
+    "bidirectional-block-down-distance": 12
+  }
+}
