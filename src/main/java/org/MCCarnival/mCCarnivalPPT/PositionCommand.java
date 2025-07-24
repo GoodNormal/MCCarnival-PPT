@@ -68,6 +68,9 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage("§c用法: /position setaxis <x|z>");
                 }
                 break;
+            case "reload":
+                handleReload(sender);
+                break;
             case "help":
                 showHelp(sender);
                 break;
@@ -257,6 +260,17 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
         }
     }
     
+    private void handleReload(CommandSender sender) {
+        // 重新加载主配置文件
+        MCCarnivalPPT.getInstance().reloadConfig();
+        // 重新加载position.yml配置文件
+        PlayerPositionManager.loadConfig();
+        
+        sender.sendMessage("§a配置文件已重新加载！");
+        sender.sendMessage("§7主配置文件(config.yml)和位置配置文件(position.yml)已重新加载");
+        sender.sendMessage("§7新的配置参数已生效，如果功能已启用，请使用 /position reposition 重新排列玩家");
+    }
+    
     private void showHelp(CommandSender sender) {
         sender.sendMessage("§6=== 玩家位置固定系统命令帮助 ===");
         sender.sendMessage("§e/position enable §7- 启用位置固定功能");
@@ -269,6 +283,7 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§e/position setaxis <x|z> §7- 设置排列主轴");
         sender.sendMessage("§e/position exempt add <玩家> §7- 添加玩家到豁免列表");
         sender.sendMessage("§e/position exempt remove <玩家> §7- 从豁免列表移除玩家");
+        sender.sendMessage("§e/position reload §7- 重新加载配置文件");
         sender.sendMessage("§e/position help §7- 显示此帮助信息");
         sender.sendMessage("§7注意：OP玩家自动豁免位置固定");
     }
@@ -278,7 +293,7 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subcommands = {"enable", "disable", "setbase", "status", "reposition", "exempt", "setyaw", "setpitch", "setaxis", "help"};
+            String[] subcommands = {"enable", "disable", "setbase", "status", "reposition", "exempt", "setyaw", "setpitch", "setaxis", "reload", "help"};
             for (String sub : subcommands) {
                 if (sub.toLowerCase().startsWith(args[0].toLowerCase())) {
                     completions.add(sub);

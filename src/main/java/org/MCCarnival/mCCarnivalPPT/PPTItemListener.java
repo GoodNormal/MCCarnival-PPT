@@ -21,18 +21,31 @@ public class PPTItemListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         
+        // 从配置文件读取翻页笔配置
+        MCCarnivalPPT plugin = MCCarnivalPPT.getInstance();
+        String materialName = plugin.getConfig().getString("pagepen.material", "STICK");
+        String displayName = plugin.getConfig().getString("pagepen.display-name", "§6PPT翻页笔");
+        int customModelData = plugin.getConfig().getInt("pagepen.custom-model-data", 1);
+        
+        Material expectedMaterial;
+        try {
+            expectedMaterial = Material.valueOf(materialName);
+        } catch (IllegalArgumentException e) {
+            expectedMaterial = Material.STICK; // 默认使用木棍
+        }
+        
         // 检查是否是PPT翻页笔
-        if (item == null || item.getType() != Material.STICK) {
+        if (item == null || item.getType() != expectedMaterial) {
             return;
         }
         
         ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasCustomModelData() || meta.getCustomModelData() != 1) {
+        if (meta == null || !meta.hasCustomModelData() || meta.getCustomModelData() != customModelData) {
             return;
         }
         
         // 检查物品名称是否为PPT翻页笔
-        if (!meta.hasDisplayName() || !meta.getDisplayName().equals("§6PPT翻页笔")) {
+        if (!meta.hasDisplayName() || !meta.getDisplayName().equals(displayName)) {
             return;
         }
         

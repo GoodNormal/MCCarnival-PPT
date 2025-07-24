@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -19,23 +18,60 @@ public class PlayerPositionManager implements Listener {
     private static final Map<UUID, Integer> playerPositions = new HashMap<>();
     private static final Set<UUID> exemptPlayers = new HashSet<>();
     
-    // 排列配置
-    private static final int PLAYERS_PER_ROW = 20;  // 每行20个玩家
-    private static final int MAX_PLAYERS_PER_LINE = 30;  // 每排最多30个玩家
-    private static final double Z_SPACING = 1.0;  // Z轴间距
-    private static final double X_SPACING = 1.0;  // X轴间距
-    private static final double Y_SPACING = 1.0;  // Y轴间距
+    // 排列配置（从配置文件读取）
+    private static int PLAYERS_PER_ROW = 20;  // 每行20个玩家
+    private static int MAX_PLAYERS_PER_LINE = 30;  // 每排最多30个玩家
+    private static double Z_SPACING = 1.0;  // Z轴间距
+    private static double X_SPACING = 1.0;  // X轴间距
+    private static double Y_SPACING = 1.0;  // Y轴间距
     
-    // 朝向配置
+    // 朝向配置（从配置文件读取）
     private static float playerYaw = -90.0f;  // 玩家yaw朝向
     private static float playerPitch = 0.0f;  // 玩家pitch朝向
     
-    // 排列方向配置
+    // 排列方向配置（从配置文件读取）
     private static boolean useXAxis = false;  // true: 以X轴为主轴, false: 以Z轴为主轴
+    
+    // 定时任务配置（从配置文件读取）
+    private static long teleportInterval = 2L;  // 传送间隔（tick）
+    
+    // 定时任务
+    private static BukkitRunnable positionTask = null;
+    
+    // 加载配置
+    public static void loadConfig() {
+        MCCarnivalPPT plugin = MCCarnivalPPT.getInstance();
+        
+        // 加载position.yml配置文件
+        plugin.saveResource("position.yml", false);
+        org.bukkit.configuration.file.FileConfiguration positionConfig = 
+            org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(
+                new java.io.File(plugin.getDataFolder(), "position.yml"));
+        
+        // 排列配置
+        PLAYERS_PER_ROW = positionConfig.getInt("layout.players-per-row", 20);
+        MAX_PLAYERS_PER_LINE = positionConfig.getInt("layout.max-players-per-line", 30);
+        X_SPACING = positionConfig.getDouble("layout.spacing.x", 1.0);
+        Y_SPACING = positionConfig.getDouble("layout.spacing.y", 1.0);
+        Z_SPACING = positionConfig.getDouble("layout.spacing.z", 1.0);
+        
+        // 朝向配置
+        playerYaw = (float) positionConfig.getDouble("orientation.yaw", -90.0);
+        playerPitch = (float) positionConfig.getDouble("orientation.pitch", 0.0);
+        
+        // 排列方向配置
+        useXAxis = positionConfig.getBoolean("axis.use-x-axis", false);
+        
+        // 定时任务配置
+        teleportInterval = positionConfig.getLong("task.teleport-interval", 2L);
+    }
     
     public static void setEnabled(boolean enable) {
         enabled = enable;
-        if (!enable) {
+        if (enable) {
+            startPositionTask();
+        } else {
+            stopPositionTask();
             playerPositions.clear();
         }
     }
@@ -93,23 +129,38 @@ public class PlayerPositionManager implements Listener {
         }
     }
     
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (!enabled || baseLocation == null) return;
+    private static void startPositionTask() {
+        if (positionTask != null) {
+            positionTask.cancel();
+        }
         
-        Player player = event.getPlayer();
-        if (player.isOp() || isExempt(player.getUniqueId())) return;
-        
-        // 检查玩家是否偏离了指定位置
-        UUID playerId = player.getUniqueId();
-        if (playerPositions.containsKey(playerId)) {
-            Location targetLocation = calculatePlayerLocation(playerPositions.get(playerId));
-            Location currentLocation = player.getLocation();
-            
-            // 如果玩家偏离了指定位置超过0.5格，则传送回去
-            if (targetLocation.distance(currentLocation) > 0.5) {
-                player.teleport(targetLocation);
+        positionTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!enabled || baseLocation == null) return;
+                
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.isOp() || isExempt(player.getUniqueId())) continue;
+                    
+                    UUID playerId = player.getUniqueId();
+                    if (playerPositions.containsKey(playerId)) {
+                        Location targetLocation = calculatePlayerLocation(playerPositions.get(playerId));
+                        if (targetLocation != null) {
+                            player.teleport(targetLocation);
+                        }
+                    }
+                }
             }
+        };
+        
+        // 根据配置文件设置的间隔执行
+        positionTask.runTaskTimer(MCCarnivalPPT.getInstance(), 0L, teleportInterval);
+    }
+    
+    private static void stopPositionTask() {
+        if (positionTask != null) {
+            positionTask.cancel();
+            positionTask = null;
         }
     }
     

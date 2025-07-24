@@ -196,20 +196,33 @@ public class PPTCommand implements CommandExecutor, TabCompleter {
      * 给玩家发放PPT翻页笔
      */
     private void givePPTPen(Player player) {
-        ItemStack pptPen = new ItemStack(Material.STICK);
+        // 从配置文件读取翻页笔配置
+        MCCarnivalPPT plugin = MCCarnivalPPT.getInstance();
+        String materialName = plugin.getConfig().getString("pagepen.material", "STICK");
+        String displayName = plugin.getConfig().getString("pagepen.display-name", "§6PPT翻页笔");
+        int customModelData = plugin.getConfig().getInt("pagepen.custom-model-data", 1);
+        List<String> lore = plugin.getConfig().getStringList("pagepen.lore");
+        
+        // 创建物品
+        Material material;
+        try {
+            material = Material.valueOf(materialName);
+        } catch (IllegalArgumentException e) {
+            material = Material.STICK; // 默认使用木棍
+            plugin.getLogger().warning("无效的翻页笔物品类型: " + materialName + "，使用默认值 STICK");
+        }
+        
+        ItemStack pptPen = new ItemStack(material);
         ItemMeta meta = pptPen.getItemMeta();
         
         if (meta != null) {
-            meta.setDisplayName("§6PPT翻页笔");
-            meta.setCustomModelData(1);
+            meta.setDisplayName(displayName);
+            meta.setCustomModelData(customModelData);
             
-            // 添加说明
-            List<String> lore = Arrays.asList(
-                "§7左键: 下一页",
-                "§7右键: 上一页",
-                "§7用于控制ppt的页码"
-            );
-            meta.setLore(lore);
+            // 设置说明文字
+            if (lore != null && !lore.isEmpty()) {
+                meta.setLore(lore);
+            }
             
             pptPen.setItemMeta(meta);
         }

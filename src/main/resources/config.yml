@@ -13,7 +13,23 @@ supported-items:
   - "PAPER"
   - "BOOK"
   - "WRITTEN_BOOK"
+
+# PPT翻页笔配置
+pagepen:
+  # 翻页笔物品类型
+  material: "RED_DYE"
+  # 翻页笔显示名称
+  display-name: "§6PPT翻页笔"
+  # 翻页笔CustomModelData值
+  custom-model-data: 1
+  # 翻页笔说明文字
+  lore:
+    - "§7左键: 下一页"
+    - "§7右键: 上一页"
+    - "§7用于控制ppt的页码"
   
+
+
 # 其他设置
 settings:
   # 搜索范围（格数）

@@ -153,7 +153,9 @@
 
 ## 配置文件
 
-插件会在首次启动时生成 `config.yml` 配置文件，包含以下设置：
+插件会在首次启动时生成两个配置文件：
+
+### config.yml - 主配置文件
 
 ```yaml
 # PPT页数设置
@@ -169,6 +171,20 @@ supported-items:
   - "PAPER"
   - "BOOK"
   - "WRITTEN_BOOK"
+
+# PPT翻页笔配置
+pagepen:
+  # 翻页笔物品类型
+  material: "STICK"
+  # 翻页笔显示名称
+  display-name: "§6PPT翻页笔"
+  # 翻页笔CustomModelData值
+  custom-model-data: 1
+  # 翻页笔说明文字
+  lore:
+    - "§7左键: 下一页"
+    - "§7右键: 上一页"
+    - "§7用于控制ppt的页码"
   
 # 其他设置
 settings:
@@ -176,13 +192,78 @@ settings:
   search-range: 10
 ```
 
+### position.yml - 玩家位置固定系统配置文件
+
+```yaml
+# 排列配置
+layout:
+  # 每行玩家数量
+  players-per-row: 20
+  # 每排最多行数
+  max-players-per-line: 30
+  # 坐标轴间距
+  spacing:
+    x: 1.0
+    y: 1.0
+    z: 1.0
+
+# 玩家朝向配置
+orientation:
+  # 水平朝向（-180到180）
+  yaw: -90.0
+  # 垂直朝向（-90到90）
+  pitch: 0.0
+
+# 排列方向配置
+axis:
+  # 主轴选择：true为X轴，false为Z轴
+  use-x-axis: false
+
+# 定时任务配置
+task:
+  # 传送间隔（tick，20tick=1秒）
+  teleport-interval: 2
+```
+
 ### 配置说明
+
+#### 主配置文件 (config.yml)
+
+##### PPT翻页笔配置 (pagepen)
+- `material`: 翻页笔物品类型，默认"STICK"（木棍）
+- `display-name`: 翻页笔显示名称，默认"§6PPT翻页笔"
+- `custom-model-data`: 翻页笔CustomModelData值，默认1
+- `lore`: 翻页笔说明文字列表，可自定义多行说明
+
+##### 其他配置
 - `ppt.max-page`: 设置PPT的最大页数，默认为100
 - `supported-items`: 支持的物品类型列表，可以添加或删除物品类型
   - 默认支持：幻翼膜(PHANTOM_MEMBRANE)、纸(PAPER)、书(BOOK)、成书(WRITTEN_BOOK)
   - 可以添加任何有效的Minecraft物品类型名称
   - 物品名称必须使用Minecraft的英文名称（全大写，用下划线分隔）
 - `settings.search-range`: 设置搜索ItemDisplay实体的范围，默认为10格
+
+#### 玩家位置固定系统配置文件 (position.yml)
+
+##### 排列配置 (layout)
+- `players-per-row`: 每行玩家数量，默认20个
+- `max-players-per-line`: 每排最多行数，默认30行
+- `spacing`: 坐标轴间距配置
+  - `x`: X轴间距，默认1.0格
+  - `y`: Y轴间距，默认1.0格
+  - `z`: Z轴间距，默认1.0格
+
+##### 朝向配置 (orientation)
+- `yaw`: 水平朝向角度，范围-180到180度，默认-90度
+- `pitch`: 垂直朝向角度，范围-90到90度，默认0度
+
+##### 排列方向配置 (axis)
+- `use-x-axis`: 主轴选择，true为X轴，false为Z轴，默认false（Z轴）
+
+##### 定时任务配置 (task)
+- `teleport-interval`: 传送间隔，单位为tick（20tick=1秒），默认2tick（0.1秒）
+
+**注意**: 修改配置文件后，使用 `/position reload` 命令重新加载配置，然后使用 `/position reposition` 重新排列玩家以应用新配置。
 
 ## 重要限制
 
@@ -247,6 +328,7 @@ settings:
 /position setyaw <角度>    # 设置玩家Yaw朝向（水平旋转角度）
 /position setpitch <角度>  # 设置玩家Pitch朝向（垂直俯仰角度）
 /position setaxis <x|z>   # 设置排列主轴（x轴或z轴）
+/position reload          # 重新加载配置文件
 /position help            # 显示帮助信息
 ```
 
@@ -266,12 +348,20 @@ settings:
 ### 特性
 
 - **自动排列**：玩家加入服务器时自动分配位置
-- **位置锁定**：玩家移动超过0.5格会被自动传送回指定位置
+- **位置锁定**：通过高频传送（每0.1秒）将玩家严格固定在指定位置
 - **OP豁免**：OP玩家自动豁免位置固定
 - **动态调整**：玩家离开时自动重新排列剩余玩家
 - **自定义朝向**：可通过命令设置玩家的yaw和pitch朝向
 - **灵活排列**：支持以X轴或Z轴为主轴进行排列
 - **豁免系统**：支持将特定玩家添加到豁免列表
+- **高频更新**：每0.1秒传送一次，确保玩家位置严格固定
+
+### 工作原理
+
+1. **基准点设置**: 使用 `/position setbase` 设置排列的起始位置
+2. **玩家排列**: 根据主轴（X轴或Z轴）按规则排列玩家
+3. **持续传送**: 启动定时任务，每0.1秒（2tick）将所有非豁免玩家传送到指定位置
+4. **动态管理**: 玩家加入时分配位置，离开时重新排列
 
 ### 权限
 

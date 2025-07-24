@@ -109,7 +109,8 @@ public final class MCCarnivalPPT extends JavaPlugin {
             getLogger().info("电梯功能已启用！");
         }
         
-        // 注册玩家位置管理器监听器
+        // 加载玩家位置管理器配置并注册监听器
+        PlayerPositionManager.loadConfig();
         getServer().getPluginManager().registerEvents(new PlayerPositionManager(), this);
         getLogger().info("玩家位置管理功能已加载！");
         

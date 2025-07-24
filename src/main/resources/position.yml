@@ -1,0 +1,30 @@
+# 玩家位置固定系统配置文件
+
+# 排列配置
+layout:
+  # 每行玩家数量
+  players-per-row: 20
+  # 每排最多行数
+  max-players-per-line: 30
+  # 坐标轴间距
+  spacing:
+    x: 1.0
+    y: 1.0
+    z: 1.0
+
+# 玩家朝向配置
+orientation:
+  # 水平朝向（-180到180）
+  yaw: -90.0
+  # 垂直朝向（-90到90）
+  pitch: 0.0
+
+# 排列方向配置
+axis:
+  # 主轴选择：true为X轴，false为Z轴
+  use-x-axis: false
+
+# 定时任务配置
+task:
+  # 传送间隔（tick，20tick=1秒）
+  teleport-interval: 2
