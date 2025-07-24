@@ -156,19 +156,27 @@ public class PlayerPositionManager implements Listener {
     public static void repositionAllPlayers() {
         if (!enabled || baseLocation == null) return;
         
-        // 重新分配所有玩家的位置
-        List<UUID> players = new ArrayList<>(playerPositions.keySet());
+        // 清空现有位置分配
         playerPositions.clear();
         
-        for (int i = 0; i < players.size(); i++) {
-            UUID playerId = players.get(i);
-            Player player = Bukkit.getPlayer(playerId);
-            if (player != null && player.isOnline()) {
-                playerPositions.put(playerId, i);
-                Location targetLocation = calculatePlayerLocation(i);
-                if (targetLocation != null) {
-                    player.teleport(targetLocation);
-                }
+        // 获取所有需要固定位置的在线玩家
+        List<Player> playersToPosition = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!player.isOp() && !isExempt(player.getUniqueId())) {
+                playersToPosition.add(player);
+            }
+        }
+        
+        // 重新分配所有玩家的位置
+        for (int i = 0; i < playersToPosition.size(); i++) {
+            Player player = playersToPosition.get(i);
+            UUID playerId = player.getUniqueId();
+            
+            playerPositions.put(playerId, i);
+            Location targetLocation = calculatePlayerLocation(i);
+            if (targetLocation != null) {
+                player.teleport(targetLocation);
+                player.sendMessage("§a您已被分配到位置 #" + (i + 1));
             }
         }
     }
