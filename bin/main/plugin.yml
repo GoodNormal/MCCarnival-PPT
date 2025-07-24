@@ -1,0 +1,24 @@
+name: MCCarnival-PPT
+version: '1.0-SNAPSHOT'
+main: org.MCCarnival.mCCarnivalPPT.MCCarnivalPPT
+api-version: '1.21'
+prefix: MUT开发组
+load: STARTUP
+authors: [ good_normal ]
+description: a template world create for mut
+website: www.mut-mc.live
+
+commands:
+  ppt:
+    description: "PPT翻页控制命令"
+    usage: "/ppt <next|up|pagepen [玩家名]|page <数字>|forbid>"
+    permission: op
+  post:
+    description: "PPT高级设置命令"
+    usage: "/post set <数字>"
+    permission: op
+
+permissions:
+  mccarnival.ppt.penuse:
+    description: "允许使用PPT翻页笔"
+    default: false
