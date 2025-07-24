@@ -1,6 +1,6 @@
 name: MCCarnival-PPT
 version: '1.0-SNAPSHOT'
-main: org.MCCarnival.mCCarnivalPPT.MCCarnivalPPT
+main: org.MCCarnival.mCCarnivalPPT.core.MCCarnivalPPT
 api-version: '1.21'
 prefix: MUT开发组
 load: STARTUP
@@ -24,6 +24,10 @@ commands:
   position:
     description: "玩家位置固定系统管理命令"
     usage: "/position <enable|disable|setbase|status|reposition|exempt|help>"
+    permission: op
+  speaker:
+    description: "演讲者模式管理命令"
+    usage: "/speaker <set|stop> <玩家名>"
     permission: op
 
 permissions:

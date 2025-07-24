@@ -1,4 +1,9 @@
-package org.MCCarnival.mCCarnivalPPT;
+package org.MCCarnival.mCCarnivalPPT.core;
+
+import org.MCCarnival.mCCarnivalPPT.ppt.*;
+import org.MCCarnival.mCCarnivalPPT.elevator.*;
+import org.MCCarnival.mCCarnivalPPT.position.*;
+import org.MCCarnival.mCCarnivalPPT.speaker.*;
 
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -98,6 +103,10 @@ public final class MCCarnivalPPT extends JavaPlugin {
         PositionCommand positionCommand = new PositionCommand();
         this.getCommand("position").setExecutor(positionCommand);
         this.getCommand("position").setTabCompleter(positionCommand);
+        
+        SpeakerCommand speakerCommand = new SpeakerCommand();
+        this.getCommand("speaker").setExecutor(speakerCommand);
+        this.getCommand("speaker").setTabCompleter(speakerCommand);
         
         // 注册事件监听器
         getServer().getPluginManager().registerEvents(new PPTItemListener(), this);

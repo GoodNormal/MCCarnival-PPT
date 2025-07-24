@@ -1,4 +1,6 @@
-package org.MCCarnival.mCCarnivalPPT;
+package org.MCCarnival.mCCarnivalPPT.elevator;
+
+import org.MCCarnival.mCCarnivalPPT.core.MCCarnivalPPT;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

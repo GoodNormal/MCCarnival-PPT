@@ -1,5 +1,6 @@
-package org.MCCarnival.mCCarnivalPPT;
+package org.MCCarnival.mCCarnivalPPT.elevator;
 
+import org.MCCarnival.mCCarnivalPPT.core.MCCarnivalPPT;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;

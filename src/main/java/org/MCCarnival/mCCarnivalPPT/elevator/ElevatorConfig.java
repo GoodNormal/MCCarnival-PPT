@@ -1,4 +1,6 @@
-package org.MCCarnival.mCCarnivalPPT;
+package org.MCCarnival.mCCarnivalPPT.elevator;
+
+import org.MCCarnival.mCCarnivalPPT.core.MCCarnivalPPT;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

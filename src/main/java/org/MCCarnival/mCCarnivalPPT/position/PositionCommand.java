@@ -1,4 +1,6 @@
-package org.MCCarnival.mCCarnivalPPT;
+package org.MCCarnival.mCCarnivalPPT.position;
+
+import org.MCCarnival.mCCarnivalPPT.core.MCCarnivalPPT;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
