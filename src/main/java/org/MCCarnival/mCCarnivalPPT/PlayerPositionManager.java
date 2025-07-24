@@ -26,6 +26,13 @@ public class PlayerPositionManager implements Listener {
     private static final double X_SPACING = 1.0;  // X轴间距
     private static final double Y_SPACING = 1.0;  // Y轴间距
     
+    // 朝向配置
+    private static float playerYaw = -90.0f;  // 玩家yaw朝向
+    private static float playerPitch = 0.0f;  // 玩家pitch朝向
+    
+    // 排列方向配置
+    private static boolean useXAxis = false;  // true: 以X轴为主轴, false: 以Z轴为主轴
+    
     public static void setEnabled(boolean enable) {
         enabled = enable;
         if (!enable) {
@@ -142,13 +149,22 @@ public class PlayerPositionManager implements Listener {
         int rowInLine = row % MAX_PLAYERS_PER_LINE;  // 排内第几行（从0开始）
         
         // 计算实际坐标
-        double x = baseLocation.getX() + (line * X_SPACING);
-        double y = baseLocation.getY() + (rowInLine * Y_SPACING);
-        double z = baseLocation.getZ() + (col * Z_SPACING);
+        double x, y, z;
+        if (useXAxis) {
+            // 以X轴为主轴排列
+            x = baseLocation.getX() + (col * X_SPACING);
+            y = baseLocation.getY() + (rowInLine * Y_SPACING);
+            z = baseLocation.getZ() + (line * Z_SPACING);
+        } else {
+            // 以Z轴为主轴排列（默认）
+            x = baseLocation.getX() + (line * X_SPACING);
+            y = baseLocation.getY() + (rowInLine * Y_SPACING);
+            z = baseLocation.getZ() + (col * Z_SPACING);
+        }
         
         Location targetLocation = new Location(baseLocation.getWorld(), x, y, z);
-        targetLocation.setYaw(-90.0f);
-        targetLocation.setPitch(0.0f);
+        targetLocation.setYaw(playerYaw);
+        targetLocation.setPitch(playerPitch);
         
         return targetLocation;
     }
@@ -194,5 +210,35 @@ public class PlayerPositionManager implements Listener {
     
     public static Map<UUID, Integer> getPlayerPositions() {
         return new HashMap<>(playerPositions);
+    }
+    
+    // 朝向配置方法
+    public static void setPlayerYaw(float yaw) {
+        playerYaw = yaw;
+    }
+    
+    public static float getPlayerYaw() {
+        return playerYaw;
+    }
+    
+    public static void setPlayerPitch(float pitch) {
+        playerPitch = pitch;
+    }
+    
+    public static float getPlayerPitch() {
+        return playerPitch;
+    }
+    
+    // 排列方向配置方法
+    public static void setUseXAxis(boolean useX) {
+        useXAxis = useX;
+    }
+    
+    public static boolean isUseXAxis() {
+        return useXAxis;
+    }
+    
+    public static String getMainAxis() {
+        return useXAxis ? "X轴" : "Z轴";
     }
 }

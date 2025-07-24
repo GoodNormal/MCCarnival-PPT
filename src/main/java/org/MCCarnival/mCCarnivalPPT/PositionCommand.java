@@ -47,6 +47,27 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage("§c用法: /position exempt <add|remove> <玩家名>");
                 }
                 break;
+            case "setyaw":
+                if (args.length >= 2) {
+                    handleSetYaw(sender, args[1]);
+                } else {
+                    sender.sendMessage("§c用法: /position setyaw <角度>");
+                }
+                break;
+            case "setpitch":
+                if (args.length >= 2) {
+                    handleSetPitch(sender, args[1]);
+                } else {
+                    sender.sendMessage("§c用法: /position setpitch <角度>");
+                }
+                break;
+            case "setaxis":
+                if (args.length >= 2) {
+                    handleSetAxis(sender, args[1]);
+                } else {
+                    sender.sendMessage("§c用法: /position setaxis <x|z>");
+                }
+                break;
             case "help":
                 showHelp(sender);
                 break;
@@ -122,11 +143,23 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
         
         sender.sendMessage("§7固定玩家数量: §e" + PlayerPositionManager.getPlayerCount());
         
+        // 显示朝向配置
+        sender.sendMessage("§7玩家朝向: §eYaw=" + PlayerPositionManager.getPlayerYaw() + ", Pitch=" + PlayerPositionManager.getPlayerPitch());
+        
+        // 显示排列配置
+        sender.sendMessage("§7排列主轴: §e" + PlayerPositionManager.getMainAxis());
+        
         // 显示排列规则
         sender.sendMessage("§7排列规则:");
-        sender.sendMessage("§7- 每行20个玩家，Z轴间距1格");
-        sender.sendMessage("§7- 每20个玩家换行（X轴+1，Y轴+1）");
-        sender.sendMessage("§7- 每排最多30行，然后向后延伸");
+        if (PlayerPositionManager.isUseXAxis()) {
+            sender.sendMessage("§7- 每行20个玩家，X轴间距1格");
+            sender.sendMessage("§7- 每20个玩家换行（Y轴+1）");
+            sender.sendMessage("§7- 每排最多30行，然后Z轴延伸");
+        } else {
+            sender.sendMessage("§7- 每行20个玩家，Z轴间距1格");
+            sender.sendMessage("§7- 每20个玩家换行（Y轴+1）");
+            sender.sendMessage("§7- 每排最多30行，然后X轴延伸");
+        }
     }
     
     private void handleReposition(CommandSender sender) {
@@ -170,6 +203,60 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
         }
     }
     
+    private void handleSetYaw(CommandSender sender, String yawStr) {
+        try {
+            float yaw = Float.parseFloat(yawStr);
+            PlayerPositionManager.setPlayerYaw(yaw);
+            sender.sendMessage("§a玩家Yaw朝向已设置为: §e" + yaw);
+            
+            // 如果功能启用，重新排列玩家
+            if (PlayerPositionManager.isEnabled()) {
+                PlayerPositionManager.repositionAllPlayers();
+                sender.sendMessage("§a已根据新朝向重新排列所有玩家");
+            }
+        } catch (NumberFormatException e) {
+            sender.sendMessage("§c无效的角度值！请输入有效的数字");
+        }
+    }
+    
+    private void handleSetPitch(CommandSender sender, String pitchStr) {
+        try {
+            float pitch = Float.parseFloat(pitchStr);
+            PlayerPositionManager.setPlayerPitch(pitch);
+            sender.sendMessage("§a玩家Pitch朝向已设置为: §e" + pitch);
+            
+            // 如果功能启用，重新排列玩家
+            if (PlayerPositionManager.isEnabled()) {
+                PlayerPositionManager.repositionAllPlayers();
+                sender.sendMessage("§a已根据新朝向重新排列所有玩家");
+            }
+        } catch (NumberFormatException e) {
+            sender.sendMessage("§c无效的角度值！请输入有效的数字");
+        }
+    }
+    
+    private void handleSetAxis(CommandSender sender, String axis) {
+        switch (axis.toLowerCase()) {
+            case "x":
+                PlayerPositionManager.setUseXAxis(true);
+                sender.sendMessage("§a排列主轴已设置为: §eX轴");
+                break;
+            case "z":
+                PlayerPositionManager.setUseXAxis(false);
+                sender.sendMessage("§a排列主轴已设置为: §eZ轴");
+                break;
+            default:
+                sender.sendMessage("§c无效的轴向！请使用 x 或 z");
+                return;
+        }
+        
+        // 如果功能启用，重新排列玩家
+        if (PlayerPositionManager.isEnabled()) {
+            PlayerPositionManager.repositionAllPlayers();
+            sender.sendMessage("§a已根据新排列方式重新排列所有玩家");
+        }
+    }
+    
     private void showHelp(CommandSender sender) {
         sender.sendMessage("§6=== 玩家位置固定系统命令帮助 ===");
         sender.sendMessage("§e/position enable §7- 启用位置固定功能");
@@ -177,6 +264,9 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§e/position setbase §7- 设置当前位置为基准点");
         sender.sendMessage("§e/position status §7- 查看系统状态");
         sender.sendMessage("§e/position reposition §7- 重新排列所有玩家位置");
+        sender.sendMessage("§e/position setyaw <角度> §7- 设置玩家Yaw朝向");
+        sender.sendMessage("§e/position setpitch <角度> §7- 设置玩家Pitch朝向");
+        sender.sendMessage("§e/position setaxis <x|z> §7- 设置排列主轴");
         sender.sendMessage("§e/position exempt add <玩家> §7- 添加玩家到豁免列表");
         sender.sendMessage("§e/position exempt remove <玩家> §7- 从豁免列表移除玩家");
         sender.sendMessage("§e/position help §7- 显示此帮助信息");
@@ -188,7 +278,7 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subcommands = {"enable", "disable", "setbase", "status", "reposition", "exempt", "help"};
+            String[] subcommands = {"enable", "disable", "setbase", "status", "reposition", "exempt", "setyaw", "setpitch", "setaxis", "help"};
             for (String sub : subcommands) {
                 if (sub.toLowerCase().startsWith(args[0].toLowerCase())) {
                     completions.add(sub);
@@ -199,6 +289,21 @@ public class PositionCommand implements CommandExecutor, TabCompleter {
             for (String action : actions) {
                 if (action.toLowerCase().startsWith(args[1].toLowerCase())) {
                     completions.add(action);
+                }
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("setaxis")) {
+            String[] axes = {"x", "z"};
+            for (String axis : axes) {
+                if (axis.toLowerCase().startsWith(args[1].toLowerCase())) {
+                    completions.add(axis);
+                }
+            }
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("setyaw") || args[0].equalsIgnoreCase("setpitch"))) {
+            // 提供一些常用角度值作为建议
+            String[] angles = {"0", "90", "-90", "180", "-180"};
+            for (String angle : angles) {
+                if (angle.startsWith(args[1])) {
+                    completions.add(angle);
                 }
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("exempt")) {
