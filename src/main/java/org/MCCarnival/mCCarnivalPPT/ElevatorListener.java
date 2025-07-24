@@ -181,15 +181,7 @@ public class ElevatorListener implements Listener {
             }.runTaskLater(MCCarnivalPPT.getInstance(), 5L);
         }
         
-        // 播放传送后音效
-        if (ElevatorConfig.isSoundEnabled()) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    player.playSound(targetLoc, ElevatorConfig.getSoundType(), 1.0f, 1.2f);
-                }
-            }.runTaskLater(MCCarnivalPPT.getInstance(), 5L);
-        }
+        // 移除重复的传送后音效播放
         
         // 传送成功消息已在各自的方法中发送
     }
